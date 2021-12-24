@@ -15,4 +15,10 @@ npm run index.js
 ex: !send 8:0:0 Nuro
 
 !token (generates a token to test if there's nothing wrong)
+
+!fill server
+ex: !fill 8:0:0
+
+!remove
+removes all fill bots
 ```
