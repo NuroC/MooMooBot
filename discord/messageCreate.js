@@ -2,8 +2,12 @@ const Generate = require("../src/bot/generate.js");
 const Connect = require("../src/bot/connect.js");
 const getArgs = require("../src/strings/getArgs.js");
 const getCommand = require("../src/strings/getCommand.js");
+const fetch = require("node-fetch");
 const fetchIP = require("../src/bot/fetchIP.js");
 const { emitter } = require("../src/puppeteer/browser.js");
+let Projects = require("../src/bot/projects.js");
+Projects = Projects();
+console.log(Projects);
 var page, init;
 emitter.once("open", (arg1, arg2) => {
   console.log("opened file.");
@@ -16,6 +20,7 @@ module.exports = async (client, message) => {
     .slice(client.config.prefix.length)
     .trim()
     .split(/ +/g);
+  console.log(args);
   const command = getCommand(args);
   switch (command) {
     case "token":
@@ -53,6 +58,28 @@ module.exports = async (client, message) => {
         )}`,
         args[1]
       );
+      break;
+    case "remove":
+      message.channel.send("Removing fill bots.");
+      for (let project in Projects)
+        fetch(`https://${Projects[project]}.glitch.me/discbot?amount=4`);
+      break;
+    case "fill":
+      for (let project in Projects) {
+        message.channel.send(
+          `https://${Projects[project]}.glitch.me/sendbot?name=${
+            ["Nuro", "Wealthy"][(Math.random() * 2) | 0]
+          }&server=${args[0]}type=${args[1]}&amount=4`
+        );
+        fetch(
+          `https://${Projects[project]}.glitch.me/sendbot?name=${
+            ["Nuro", "Wealthy"][(Math.random() * 2) | 0]
+          }&server=${args[0]}type=${args[1]}&amount=4`
+        ).then(e => {
+          console.log("successfully fetched " + Projects[project]);
+        });
+      }
+
       break;
   }
 };
