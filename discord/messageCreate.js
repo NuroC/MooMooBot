@@ -4,7 +4,7 @@ const getArgs = require("../src/strings/getArgs.js");
 const getCommand = require("../src/strings/getCommand.js");
 const fetchIP = require("../src/bot/fetchIP.js");
 const { emitter } = require("../src/puppeteer/browser.js");
-var page, init
+var page, init;
 emitter.once("open", (arg1, arg2) => {
   console.log("opened file.");
   page = arg1;
@@ -20,8 +20,18 @@ module.exports = async (client, message) => {
   switch (command) {
     case "token":
       if (!init) return message.channel.send("Puppeeter isn't in the browser.");
+      let start = Date.now();
       let token1 = await Generate(page);
-      message.channel.send(token1);
+      let taken = Number(
+        Date.now() - start < 1e3
+          ? `0.${Date.now() - start}`
+          : `${Math.round((Date.now() - start) / 1e3)}.${Date.now() - start}`
+      ).toFixed(1);
+      message.channel.send({
+        embeds: [
+          { title: `Execution took ${taken} seconds`, description: token1 }
+        ]
+      });
       break;
     case "send":
       if (!init) return message.channel.send("Puppeeter isn't in the browser.");
@@ -46,4 +56,3 @@ module.exports = async (client, message) => {
       break;
   }
 };
-
