@@ -17,8 +17,7 @@ emitter.once("open", (arg1, arg2) => {
   page = arg1;
   init = arg2;
 });
-// ok :(
-// fuck you bitch
+
 const msgpack = require("msgpack-lite");
 module.exports = async (client, message) => {
   const args = message.content
@@ -27,7 +26,7 @@ module.exports = async (client, message) => {
     .split(/ +/g);
   const command = getCommand(args);
   switch (
-    command // noo why
+    command
   ) {
     case "info":
       let afh = await fetchData(
@@ -35,6 +34,7 @@ module.exports = async (client, message) => {
         args[0].split(":")[1].split(":")[0],
         args[1]
       );
+      if(!afh) return message.channel.send('Invalid server.')
       message.channel.send({
         embeds: [
           {
