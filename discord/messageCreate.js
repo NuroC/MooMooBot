@@ -4,17 +4,20 @@ const getArgs = require("../src/strings/getArgs.js");
 const getCommand = require("../src/strings/getCommand.js");
 const fetch = require("node-fetch");
 const fetchIP = require("../src/bot/fetchIP.js");
+const fetchData = require("../src/bot/fetchData.js");
 const { emitter } = require("../src/puppeteer/browser.js");
-const removeBots = require("../src/functions/removeBots.js")
+const removeBots = require("../src/functions/removeBots.js");
+const getTaken = require("../src/strings/taken.js")
 let Projects = require("../src/bot/projects.js");
 Projects = Projects();
-console.log(Projects);
 var page, init;
 emitter.once("open", (arg1, arg2) => {
   console.log("opened file.");
   page = arg1;
   init = arg2;
 });
+// ok :(
+// fuck you bitch
 const msgpack = require("msgpack-lite");
 module.exports = async (client, message) => {
   const args = message.content
@@ -22,19 +25,58 @@ module.exports = async (client, message) => {
     .trim()
     .split(/ +/g);
   const command = getCommand(args);
-  switch (command) {
-    case "ping":
-      message.channel.send('pong')
+  switch (
+    command // noo why
+  ) {
+    case "info":
+      let afh = await fetchData(
+        args[0].split(":")[0],
+        args[0].split(":")[1].split(":")[0],
+        args[1]
+      );
+      message.channel.send({
+        embeds: [
+          {
+            title: `${args[0]}`,
+            description: `Just fetched server data, nothing special.`,
+            author: {
+              name: "Nuro & Wealthy"
+            },
+            fields: [
+              {
+                name: "ip",
+                value: afh.ip
+              },
+              {
+                name: "\u200b",
+                value: "\u200b",
+                inline: false
+              },
+              {
+                name: "player count",
+                value: afh.games[0].playerCount.toString(),
+                inline: true
+              },
+              {
+                name: "private",
+                value: afh.games[0].isPrivate.toString(),
+                inline: true
+              },
+              {
+                name: "scheme",
+                value: afh.scheme,
+                inline: true
+              }
+            ]
+          }
+        ]
+      });
       break;
     case "token":
       if (!init) return message.channel.send("Puppeeter isn't in the browser.");
       let start = Date.now();
       let token1 = await Generate(page);
-      let taken = Number(
-        Date.now() - start < 1e3
-          ? `0.${Date.now() - start}`
-          : `${Math.round((Date.now() - start) / 1e3)}.${Date.now() - start}`
-      ).toFixed(1);
+      let taken = await getTaken(start)
       message.channel.send({
         embeds: [
           { title: `Execution took ${taken} seconds`, description: token1 }
@@ -51,7 +93,7 @@ module.exports = async (client, message) => {
           }
         ]
       });
-      removeBots(Projects)
+      removeBots(Projects);
       break;
     case "fill":
       if (!args[0] || !args[0].includes(":"))
@@ -93,4 +135,3 @@ module.exports = async (client, message) => {
       break;
   }
 };
-
