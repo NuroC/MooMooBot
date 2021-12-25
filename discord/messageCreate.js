@@ -1,4 +1,5 @@
 const Generate = require("../src/bot/generate.js");
+console.log(typeof this)
 const Connect = require("../src/bot/connect.js");
 const getArgs = require("../src/strings/getArgs.js");
 const getCommand = require("../src/strings/getCommand.js");
@@ -135,5 +136,3 @@ module.exports = async (client, message) => {
       break;
   }
 };
-
-
