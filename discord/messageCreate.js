@@ -1,5 +1,4 @@
 const Generate = require("../src/bot/generate.js");
-console.log(typeof this)
 const Connect = require("../src/bot/connect.js");
 const getArgs = require("../src/strings/getArgs.js");
 const getCommand = require("../src/strings/getCommand.js");
@@ -8,7 +7,8 @@ const fetchIP = require("../src/bot/fetchIP.js");
 const fetchData = require("../src/bot/fetchData.js");
 const { emitter } = require("../src/puppeteer/browser.js");
 const removeBots = require("../src/functions/removeBots.js");
-const getTaken = require("../src/strings/taken.js")
+const getTaken = require("../src/strings/taken.js");
+const collectStats = require("../src/bot/serverStats.js");
 let Projects = require("../src/bot/projects.js");
 Projects = Projects();
 var page, init;
@@ -19,22 +19,20 @@ emitter.once("open", (arg1, arg2) => {
 });
 
 const msgpack = require("msgpack-lite");
-module.exports = async (client, message) => {
+module.exports = async (client, message, serverData) => {
   const args = message.content
     .slice(client.config.prefix.length)
     .trim()
     .split(/ +/g);
   const command = getCommand(args);
-  switch (
-    command
-  ) {
+  switch (command) {
     case "info":
-      let afh = await fetchData(
+      serverData = await fetchData(
         args[0].split(":")[0],
         args[0].split(":")[1].split(":")[0],
         args[1]
       );
-      if(!afh) return message.channel.send('Invalid server.')
+      if (!serverData) return message.channel.send("Invalid server.");
       message.channel.send({
         embeds: [
           {
@@ -46,7 +44,7 @@ module.exports = async (client, message) => {
             fields: [
               {
                 name: "ip",
-                value: afh.ip
+                value: serverData.ip
               },
               {
                 name: "\u200b",
@@ -55,17 +53,65 @@ module.exports = async (client, message) => {
               },
               {
                 name: "player count",
-                value: afh.games[0].playerCount.toString(),
+                value: serverData.games[0].playerCount.toString(),
                 inline: true
               },
               {
                 name: "private",
-                value: afh.games[0].isPrivate.toString(),
+                value: serverData.games[0].isPrivate.toString(),
                 inline: true
               },
               {
                 name: "scheme",
-                value: afh.scheme,
+                value: serverData.scheme,
+                inline: true
+              }
+            ]
+          }
+        ]
+      });
+      break;
+    case "stats":
+      serverData = [
+        await collectStats("sandbox"),
+        await collectStats("normal"),
+        await collectStats("dev")
+      ];
+      let displayer = [];
+      for (let i in serverData) displayer[i] = serverData[i].toString();
+      message.channel.send({
+        embeds: [
+          {
+            title: `MooMoo.io status`,
+            description: `Just fetched server data, nothing special.`,
+            author: {
+              name: "Nuro & Wealthy"
+            },
+            fields: [
+              {
+                name: "total",
+                value: Number(
+                  serverData[0] + serverData[1] + serverData[2]
+                ).toString()
+              },
+              {
+                name: "\u200b",
+                value: "\u200b",
+                inline: false
+              },
+              {
+                name: "sandbox",
+                value: displayer[0],
+                inline: true
+              },
+              {
+                name: "normal",
+                value: displayer[1],
+                inline: true
+              },
+              {
+                name: "dev",
+                value: displayer[2],
                 inline: true
               }
             ]
@@ -77,7 +123,7 @@ module.exports = async (client, message) => {
       if (!init) return message.channel.send("Puppeeter isn't in the browser.");
       let start = Date.now();
       let token1 = await Generate(page);
-      let taken = await getTaken(start)
+      let taken = await getTaken(start);
       message.channel.send({
         embeds: [
           { title: `Execution took ${taken} seconds`, description: token1 }
