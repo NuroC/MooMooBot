@@ -5,6 +5,7 @@ const getCommand = require("../src/strings/getCommand.js");
 const fetch = require("node-fetch");
 const fetchIP = require("../src/bot/fetchIP.js");
 const { emitter } = require("../src/puppeteer/browser.js");
+const removeBots = require("../src/functions/removeBots.js")
 let Projects = require("../src/bot/projects.js");
 Projects = Projects();
 console.log(Projects);
@@ -22,6 +23,9 @@ module.exports = async (client, message) => {
     .split(/ +/g);
   const command = getCommand(args);
   switch (command) {
+    case "ping":
+      message.channel.send('pong')
+      break;
     case "token":
       if (!init) return message.channel.send("Puppeeter isn't in the browser.");
       let start = Date.now();
@@ -37,24 +41,6 @@ module.exports = async (client, message) => {
         ]
       });
       break;
-    case "crash":
-      if (!init) return message.channel.send("Puppeeter isn't in the browser.");
-      if (!args[0] || !args[0].includes(":"))
-        return message.channel.send("Invalid server.");
-      let ip = await fetchIP(
-        args[0].split(":")[0],
-        args[0].split(":")[1].split(":")[0]
-      );
-      if (!ip) return message.channel.send("Invalid server.");
-      Connect(
-        false,
-        message.channel,
-        msgpack,
-        `wss://ip_${ip}.moomoo.io:8008/?gameIndex=0&token=${await Generate(
-          page
-        )}`
-      );
-      break;
     case "remove":
       message.channel.send({
         embeds: [
@@ -65,8 +51,7 @@ module.exports = async (client, message) => {
           }
         ]
       });
-      for (let project in Projects)
-        fetch(`https://${Projects[project]}.glitch.me/discbot?amount=4`);
+      removeBots(Projects)
       break;
     case "fill":
       if (!args[0] || !args[0].includes(":"))
