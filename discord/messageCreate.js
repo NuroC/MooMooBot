@@ -10,8 +10,10 @@ const removeBots = require("../src/functions/removeBots.js");
 const getTaken = require("../src/strings/taken.js");
 const collectStats = require("../src/bot/serverStats.js");
 let Projects = require("../src/bot/projects.js");
-const succBotEmb = require("../src/strings/embeds/successBots.js")
-const succBotEmbEdit = require("../src/strings/embeds/successBotsEdit.js")
+
+const succBotEmb = require("../src/strings/embeds/successBots.js");
+const succBotEmbEdit = require("../src/strings/embeds/successBotsEdit.js");
+const removBotsEmb = require("../src/strings/embeds/removeBots.js");
 Projects = Projects();
 var page, init;
 emitter.once("open", (arg1, arg2) => {
@@ -133,15 +135,7 @@ module.exports = async (client, message, serverData) => {
       });
       break;
     case "remove":
-      message.channel.send({
-        embeds: [
-          {
-            title: `Removing Bots`,
-            description:
-              "Bots in the server will be removed as soon as possible."
-          }
-        ]
-      });
+      message.channel.send(removBotsEmb());
       removeBots(Projects);
       break;
     case "fill":
@@ -165,12 +159,10 @@ module.exports = async (client, message, serverData) => {
         );
         if (!ipv) return message.channel.send("Invalid server.");
         let msgid;
-        message.channel
-          .send(succBotEmb(args))
-          .then(msg => {
-            msgid = msg.id;
-            console.log(msgid);
-          });
+        message.channel.send(succBotEmb(args)).then(msg => {
+          msgid = msg.id;
+          console.log(msgid);
+        });
         let sentProjects = 0;
         let failedProxies = 0;
         for (let project in Projects) {
