@@ -20,7 +20,6 @@ module.exports = async (client, message) => {
     .slice(client.config.prefix.length)
     .trim()
     .split(/ +/g);
-  console.log(args);
   const command = getCommand(args);
   switch (command) {
     case "token":
@@ -38,48 +37,75 @@ module.exports = async (client, message) => {
         ]
       });
       break;
-    case "send":
+    case "crash":
       if (!init) return message.channel.send("Puppeeter isn't in the browser.");
       if (!args[0] || !args[0].includes(":"))
         return message.channel.send("Invalid server.");
-      if (!args[1]) return message.channel.send("Invalid name.");
       let ip = await fetchIP(
         args[0].split(":")[0],
         args[0].split(":")[1].split(":")[0]
       );
       if (!ip) return message.channel.send("Invalid server.");
-      args[1] && message.channel.send(`Connecting ${args[1]}`);
       Connect(
         false,
         message.channel,
         msgpack,
         `wss://ip_${ip}.moomoo.io:8008/?gameIndex=0&token=${await Generate(
           page
-        )}`,
-        args[1]
+        )}`
       );
       break;
     case "remove":
-      message.channel.send("Removing fill bots.");
+      message.channel.send({
+        embeds: [
+          {
+            title: `Removing Bots`,
+            description:
+              "Bots in the server will be removed as soon as possible."
+          }
+        ]
+      });
       for (let project in Projects)
         fetch(`https://${Projects[project]}.glitch.me/discbot?amount=4`);
       break;
     case "fill":
+      if (!args[0] || !args[0].includes(":"))
+        return message.channel.send("Invalid server.");
+      if (
+        !args[1] ||
+        !["normal", "norm", "sandbox", "sand", "dev"].includes(args[1])
+      )
+        return message.channel.send("Invalid server type.");
+      args[1] = args[1].includes("norm")
+        ? "normal"
+        : args[1].includes("sand")
+        ? "sandbox"
+        : "dev";
+      let ipv = await fetchIP(
+        args[0].split(":")[0],
+        args[0].split(":")[1].split(":")[0],
+        args[1]
+      );
+      if (!ipv) return message.channel.send("Invalid server.");
+      message.channel.send({
+        embeds: [
+          {
+            title: `Connecting Bots`,
+            description: `50 Bots will join ${args[1]} ${
+              args[0]
+            } as soon as possible.`
+          }
+        ]
+      });
       for (let project in Projects) {
-        message.channel.send(
-          `https://${Projects[project]}.glitch.me/sendbot?name=${
-            ["Nuro", "Wealthy"][(Math.random() * 2) | 0]
-          }&server=${args[0]}type=${args[1]}&amount=4`
-        );
         fetch(
           `https://${Projects[project]}.glitch.me/sendbot?name=${
             ["Nuro", "Wealthy"][(Math.random() * 2) | 0]
-          }&server=${args[0]}type=${args[1]}&amount=4`
-        ).then(e => {
-          console.log("successfully fetched " + Projects[project]);
-        });
+          }&server=${args[0]}&type=${args[1]}&amount=4`
+        );
       }
 
       break;
   }
 };
+
