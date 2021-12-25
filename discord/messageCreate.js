@@ -10,7 +10,8 @@ const removeBots = require("../src/functions/removeBots.js");
 const getTaken = require("../src/strings/taken.js");
 const collectStats = require("../src/bot/serverStats.js");
 let Projects = require("../src/bot/projects.js");
-// const getStatsEmb = require("../src/strings/embeds/stats.js")
+const succBotEmb = require("../src/strings/embeds/successBots.js")
+const succBotEmbEdit = require("../src/strings/embeds/successBotsEdit.js")
 Projects = Projects();
 var page, init;
 emitter.once("open", (arg1, arg2) => {
@@ -164,46 +165,33 @@ module.exports = async (client, message, serverData) => {
         );
         if (!ipv) return message.channel.send("Invalid server.");
         let msgid;
-        message.channel.send({
-          embeds: [
-            {
-              title: `Connecting Bots`,
-              description: `50 Bots will join ${args[1]} ${
-                args[0]
-              } as soon as possible.`
-            }
-          ]
-        }).then(msg => {
-          msgid = msg.id;
-          console.log(msgid)
-        })
+        message.channel
+          .send(succBotEmb(args))
+          .then(msg => {
+            msgid = msg.id;
+            console.log(msgid);
+          });
         let sentProjects = 0;
-        let failedProxies = 0
+        let failedProxies = 0;
         for (let project in Projects) {
-           let response = await fetch(
+          let response = await fetch(
             `https://${Projects[project]}.glitch.me/sendbot?name=${
               ["Nuro", "Wealthy"][(Math.random() * 2) | 0]
             }&server=${args[0]}&type=${args[1]}&amount=4`
-          )
-           let text = await response.text()
-            if(text.split(" ")[0] == "Connecting") {
-              sentProjects++
-            } else {
-              failedProxies++
-            }
+          );
+          let text = await response.text();
+          if (text.split(" ")[0] == "Connecting") {
+            sentProjects++;
+          } else {
+            failedProxies++;
+          }
         }
-        message.channel.messages.fetch({around: msgid, limit: 1})
-    .then(msg => {
-        const fetchedMsg = msg.first();
-        fetchedMsg.edit({
-          embeds: [
-            {
-              title: `Connected Bots`,
-              description: "successfully activated " + sentProjects + " proxies, " + failedProxies + " failed to load."
-            }
-          ]
-        });
-    });
+        message.channel.messages
+          .fetch({ around: msgid, limit: 1 })
+          .then(msg => {
+            const fetchedMsg = msg.first();
+            fetchedMsg.edit(succBotEmbEdit(sentProjects, failedProxies));
+          });
       } else {
         message.reply("You cant use that.");
       }
