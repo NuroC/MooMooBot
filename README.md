@@ -16,9 +16,12 @@ ex: !send 8:0:0 Nuro
 
 !token (generates a token to test if there's nothing wrong)
 
-!fill server
-ex: !fill 8:0:0
+!fill server <dev/sandbox/normal>
+ex: !fill 8:0:0 normal
 
 !remove
 removes all fill bots
+
+!crash server
+ex: !crash 8:0:0
 ```
