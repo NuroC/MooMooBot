@@ -19,4 +19,3 @@ async function getData(serverData) {
 
 module.exports = getData;
 
-// dont forget to pull request <3
