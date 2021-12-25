@@ -20,3 +20,4 @@ ex: !crash 8:0:0
 !info <server>
 ex: !info 8:0:0
 ```
+
