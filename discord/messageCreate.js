@@ -46,10 +46,7 @@ emitter.once("open", (arg1, arg2) => {
 module.exports = async (client, message, serverData) => {
   if (message.channel.id == "924439985359323166")
     setTimeout(message.delete(), 4000);
-  const args = message.content
-    .slice(client.config.prefix.length)
-    .trim()
-    .split(/ +/g);
+  const args = message.content.slice(client.config.prefix.length).trim().split(/ +/g);
   const command = getCommand(args);
   switch (command) {
     case "ping":
@@ -75,14 +72,7 @@ module.exports = async (client, message, serverData) => {
       removeBots(Projects);
       break;
     case "fill":
-      execommands.fill(
-        message,
-        args,
-        succBotEmb,
-        succBotEmbEdit,
-        fetchIP,
-        Projects
-      );
+      execommands.fill(message,args,succBotEmb,succBotEmbEdit,fetchIP,Projects);
       break;
   }
 };
