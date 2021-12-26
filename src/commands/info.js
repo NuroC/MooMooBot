@@ -1,12 +1,8 @@
-async function executeCommand(args, getInfo, message, fetchData){
-  if(!args) return;
-  const serverData = await fetchData(
-        args[0].split(":")[0],
-        args[0].split(":")[1].split(":")[0],
-        args[1]
-      );
-      if (!serverData) return message.channel.send("Invalid server.");
-      message.channel.send(getInfo(serverData, args));
+async function executeCommand(e, n, t, s) {
+    if (!e) return;
+    const a = await s(e[0].split(":")[0], e[0].split(":")[1].split(":")[0], e[1]);
+    if (!a) return t.channel.send("Invalid server.");
+    t.channel.send(n(a, e));
 }
 
 module.exports = executeCommand;
