@@ -1,35 +1,34 @@
-const Generate = require("../src/bot/generate.js");
-const Connect = require("../src/bot/connect.js");
-const getArgs = require("../src/strings/getArgs.js");
-const getCommand = require("../src/strings/getCommand.js");
-const fetch = require("node-fetch");
-const fetchIP = require("../src/bot/fetchIP.js");
-const fetchData = require("../src/bot/fetchData.js");
-const { emitter } = require("../src/puppeteer/browser.js");
-const removeBots = require("../src/functions/removeBots.js");
-const getTaken = require("../src/strings/taken.js");
-const collectStats = require("../src/bot/serverStats.js");
+const db = require("quick.db"),
+  fetch = require("node-fetch"),
+  msgpack = require("msgpack-lite");
 
-const genRandom = require("../src/functions/bypass.js");
-let Projects = require("../src/bot/projects.js");
-const db = require("quick.db");
-const succBotEmb = require("../src/strings/embeds/successBots.js");
-const succBotEmbEdit = require("../src/strings/embeds/successBotsEdit.js");
-const removBotsEmb = require("../src/strings/embeds/removeBots.js");
-Projects = Projects();
-var page, init;
+const { emitter } = require("../src/puppeteer/browser.js");
+
+const removeBots = require("../src/functions/removeBots.js"),
+  genRandom = require("../src/functions/bypass.js"),
+  Projects = require("../src/bot/projects.js")(),
+  collectStats = require("../src/bot/serverStats.js"),
+  fetchIP = require("../src/bot/fetchIP.js"),
+  fetchData = require("../src/bot/fetchData.js"),
+  Generate = require("../src/bot/generate.js"),
+  Connect = require("../src/bot/connect.js");
+
+const succBotEmb = require("../src/strings/embeds/successBots.js"),
+  succBotEmbEdit = require("../src/strings/embeds/successBotsEdit.js"),
+  removBotsEmb = require("../src/strings/embeds/removeBots.js"),
+  serverStatsEmv = require("../src/strings/embeds/serverStats.js"),
+  getArgs = require("../src/strings/getArgs.js"),
+  getCommand = require("../src/strings/getCommand.js"),
+  getTaken = require("../src/strings/taken.js");
+
+let page, init;
 emitter.once("open", (arg1, arg2) => {
   console.log("opened file.");
   page = arg1;
-  init = arg2; // hi
+  init = arg2;
 });
-const msgpack = require("msgpack-lite");
 module.exports = async (client, message, serverData) => {
-  if (message.channel.id == "924439985359323166") {
-    setTimeout(() => {
-      message.delete();
-    }, 4000);
-  }
+  if (message.channel.id == "924439985359323166") setTimeout(message.delete(), 4000);
   const args = message.content
     .slice(client.config.prefix.length)
     .trim()
@@ -87,39 +86,7 @@ module.exports = async (client, message, serverData) => {
         await collectStats("normal"),
         await collectStats("dev")
       ];
-      message.channel.send({
-        embeds: [
-          {
-            title: `Server Stats`,
-            description: "fetching serverdata",
-            fields: [
-              {
-                name: "total",
-                value: (
-                  serverData[1] +
-                  serverData[0] +
-                  serverData[2]
-                ).toString()
-              },
-              {
-                name: "sandbox",
-                value: serverData[0].toString(),
-                inline: true
-              },
-              {
-                name: "normal",
-                value: serverData[1].toString(),
-                inline: true
-              },
-              {
-                name: "dev",
-                value: serverData[2].toString(),
-                inline: true
-              }
-            ]
-          }
-        ]
-      });
+      message.channel.send(serverStatsEmv(serverData));
       break;
     case "verify":
       if (!args[0])
@@ -128,18 +95,17 @@ module.exports = async (client, message, serverData) => {
       let tokens = db.get("storage.tokens");
       let usedtoken = false;
       let hd7a = false;
-      for (let invite in tokens) {
+      for (let invite in tokens)
         if (tokens[invite] == args[0]) {
           let usedtokenlist = db.get("storage.usedtokens");
           for (let i in usedtokenlist) {
-            if (usedtokenlist[i] == args[0]) {
+            if (usedtokenlist[i] == args[0] 
               usedtoken = true;
             }
           }
           hd7a = true;
           db.push("storage.usedtokens", args[0]);
         }
-      }
       if (usedtoken) {
         message.reply("already used token");
       } else {
