@@ -1,5 +1,5 @@
 # MooMooBot
-a full functional discord bot to send moomoo.io bots
+a discord bot which does moomoo.io stuff
 
 # commands
 ```
@@ -7,7 +7,6 @@ a full functional discord bot to send moomoo.io bots
 ex: !send 8:0:0 Nuro
 
 !token (generates a token to test if there's nothing wrong)
-
 
 !remove
 removes all fill bots
