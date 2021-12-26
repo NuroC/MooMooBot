@@ -1,58 +1,28 @@
 const fetch = require("node-fetch");
 
-async function executeCommand(
-  message,
-  args,
-  succBotEmb,
-  succBotEmbEdit,
-  fetchIP,
-  Projects
-) {
-  if (message.member.roles.cache.has("924397464079982654")) {
-    if (!args[0] || !args[0].includes(":"))
-      return message.channel.send("Invalid server.");
-    if (
-      !args[1] ||
-      !["normal", "norm", "sandbox", "sand", "dev"].includes(args[1])
-    )
-      return message.channel.send("Invalid server type.");
-    args[1] = args[1].includes("norm")
-      ? "normal"
-      : args[1].includes("sand")
-      ? "sandbox"
-      : "dev";
-    let ipv = await fetchIP(
-      args[0].split(":")[0],
-      args[0].split(":")[1].split(":")[0],
-      args[1]
-    );
-    if (!ipv) return message.channel.send("Invalid server.");
-    let msgid;
-    message.channel.send(succBotEmb(args)).then(msg => {
-      msgid = msg.id;
-    });
-    let sentProjects = 0;
-    let failedProxies = 0;
-    for (let project in Projects) {
-      let response = await fetch(
-        `https://${Projects[project]}.glitch.me/sendbot?name=${
-          ["Nuro", "Wealthy"][(Math.random() * 2) | 0]
-        }&server=${args[0]}&type=${args[1]}&amount=4`
-      );
-      let text = await response.text();
-      if (text.split(" ")[0] == "Connecting") {
-        sentProjects++;
-      } else {
-        failedProxies++;
-      }
-    }
-    message.channel.messages.fetch({ around: msgid, limit: 1 }).then(msg => {
-      const fetchedMsg = msg.first();
-      fetchedMsg.edit(succBotEmbEdit(sentProjects, failedProxies));
-    });
-  } else {
-    message.reply("You cant use that.");
-  }
+async function executeCommand(e, n, t, a, s, l) {
+    if (e.member.roles.cache.has("924397464079982654")) {
+        if (!n[0] || !n[0].includes(":")) return e.channel.send("Invalid server.");
+        if (!n[1] || !["normal", "norm", "sandbox", "sand", "dev"].includes(n[1])) return e.channel.send("Invalid server type.");
+        let r;
+        if (n[1] = n[1].includes("norm") ? "normal" : n[1].includes("sand") ? "sandbox" : "dev",
+            !await s(n[0].split(":")[0], n[0].split(":")[1].split(":")[0], n[1])) return e.channel.send("Invalid server.");
+        e.channel.send(t(n)).then(e => {
+            r = e.id;
+        });
+        let i = 0,
+            d = 0;
+        for (let e in l) {
+            let t = await fetch(`https://${l[e]}.glitch.me/sendbot?name=${[ "Nuro", "Wealthy" ][2 * Math.random() | 0]}&server=${n[0]}&type=${n[1]}&amount=4`);
+            "Connecting" == (await t.text()).split(" ")[0] ? i++ : d++;
+        }
+        e.channel.messages.fetch({
+            around: r,
+            limit: 1
+        }).then(e => {
+            e.first().edit(a(i, d));
+        });
+    } else e.reply("You cant use that.");
 }
 
 module.exports = executeCommand;
