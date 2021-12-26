@@ -1,13 +1,10 @@
 const db = require("quick.db");
 
-function executeCommand(message, args, genRandom) {
-  if (message.member.roles.cache.has("924444165226528858")) {
-    let generatedToken = genRandom(20);
-    message.author.send(generatedToken);
-    db.push("storage.tokens", generatedToken);
-  } else {
-    message.reply("you cant use that.");
-  }
+function executeCommand(e, t, o) {
+    if (e.member.roles.cache.has("924444165226528858")) {
+        let t = o(20);
+        e.author.send(t), db.push("storage.tokens", t);
+    } else e.reply("you cant use that.");
 }
 
 module.exports = executeCommand;
