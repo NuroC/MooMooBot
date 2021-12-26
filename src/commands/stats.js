@@ -1,10 +1,6 @@
-async function executeCommand(message, collectStats, serverStatsEmv) {
-        var serverData = [
-        await collectStats("sandbox"),
-        await collectStats("normal"),
-        await collectStats("dev")
-      ];
-      message.channel.send(serverStatsEmv(serverData));
+async function executeCommand(a, e, n) {
+    var o = [await e("sandbox"), await e("normal"), await e("dev")];
+    a.channel.send(n(o));
 }
 
-module.exports = executeCommand
+module.exports = executeCommand;
