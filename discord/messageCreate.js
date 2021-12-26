@@ -9,8 +9,9 @@ const { emitter } = require("../src/puppeteer/browser.js");
 const removeBots = require("../src/functions/removeBots.js");
 const getTaken = require("../src/strings/taken.js");
 const collectStats = require("../src/bot/serverStats.js");
+const genRandom = require("../src/functions/bypass.js");
 let Projects = require("../src/bot/projects.js");
-
+const db = require("quick.db");
 const succBotEmb = require("../src/strings/embeds/successBots.js");
 const succBotEmbEdit = require("../src/strings/embeds/successBotsEdit.js");
 const removBotsEmb = require("../src/strings/embeds/removeBots.js");
@@ -19,11 +20,15 @@ var page, init;
 emitter.once("open", (arg1, arg2) => {
   console.log("opened file.");
   page = arg1;
-  init = arg2;
+  init = arg2; // hi
 });
-
 const msgpack = require("msgpack-lite");
 module.exports = async (client, message, serverData) => {
+  if (message.channel.id == "924439985359323166") {
+    setTimeout(() => {
+      message.delete();
+    }, 4000);
+  }
   const args = message.content
     .slice(client.config.prefix.length)
     .trim()
@@ -82,7 +87,8 @@ module.exports = async (client, message, serverData) => {
         await collectStats("dev")
       ];
       let displayer = [];
-      for (let i in serverData) displayer[i] = serverData[i].toString();
+      debugger;
+      for (let i in serverData) displayer[i] = serverData[i] ? serverData[i].toString() : 'failed';
       message.channel.send({
         embeds: [
           {
@@ -122,6 +128,50 @@ module.exports = async (client, message, serverData) => {
           }
         ]
       });
+      break;
+    case "verify":
+      if (!args[0])
+        if (!message.channel.id == "924439985359323166") return message.reply("wrong channel");
+      let tokens = db.get("storage.tokens");
+      let usedtoken = false;
+      let hd7a = false;
+      for (let invite in tokens) {
+        if (tokens[invite] == args[0]) {
+          let usedtokenlist = db.get("storage.usedtokens");
+          for (let i in usedtokenlist) {
+            if (usedtokenlist[i] == args[0]) {
+              usedtoken = true;
+            }
+          }
+          hd7a = true;
+          db.push("storage.usedtokens", args[0]);
+        }
+      }
+      if (usedtoken) {
+        message.reply("already used token");
+      } else {
+        if (hd7a) {
+                
+      let role = message.member.guild.roles.cache.find(
+        role => role.id === "924397231740706877"
+      );
+      if (role) message.guild.members.cache.get(message.author.id).roles.add(role);
+        } else {
+          message.reply("you entered a wrong invite.");
+        }
+      }
+
+
+      break;
+    case "geninvite":
+      if (message.member.roles.cache.has("924444165226528858")) {
+        let generatedToken = genRandom(20);
+        message.author.send(generatedToken);
+        db.push("storage.tokens", generatedToken);
+        console.log(db.get("storage.tokens"));
+      } else {
+        message.reply("you cant use that.");
+      }
       break;
     case "token":
       if (!init) return message.channel.send("Puppeeter isn't in the browser.");
