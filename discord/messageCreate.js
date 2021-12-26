@@ -9,6 +9,7 @@ const { emitter } = require("../src/puppeteer/browser.js");
 const removeBots = require("../src/functions/removeBots.js");
 const getTaken = require("../src/strings/taken.js");
 const collectStats = require("../src/bot/serverStats.js");
+
 const genRandom = require("../src/functions/bypass.js");
 let Projects = require("../src/bot/projects.js");
 const db = require("quick.db");
@@ -86,42 +87,33 @@ module.exports = async (client, message, serverData) => {
         await collectStats("normal"),
         await collectStats("dev")
       ];
-      let displayer = [];
-      debugger;
-      for (let i in serverData) displayer[i] = serverData[i] ? serverData[i].toString() : 'failed';
       message.channel.send({
         embeds: [
           {
-            title: `MooMoo.io status`,
-            description: `Just fetched server data, nothing special.`,
-            author: {
-              name: "Nuro & Wealthy"
-            },
+            title: `Server Stats`,
+            description: "fetching serverdata",
             fields: [
               {
                 name: "total",
-                value: Number(
-                  serverData[0] + serverData[1] + serverData[2]
+                value: (
+                  serverData[1] +
+                  serverData[0] +
+                  serverData[2]
                 ).toString()
               },
               {
-                name: "\u200b",
-                value: "\u200b",
-                inline: false
-              },
-              {
                 name: "sandbox",
-                value: displayer[0],
+                value: serverData[0].toString(),
                 inline: true
               },
               {
                 name: "normal",
-                value: displayer[1],
+                value: serverData[1].toString(),
                 inline: true
               },
               {
                 name: "dev",
-                value: displayer[2],
+                value: serverData[2].toString(),
                 inline: true
               }
             ]
@@ -131,7 +123,8 @@ module.exports = async (client, message, serverData) => {
       break;
     case "verify":
       if (!args[0])
-        if (!message.channel.id == "924439985359323166") return message.reply("wrong channel");
+        if (!message.channel.id == "924439985359323166")
+          return message.reply("wrong channel");
       let tokens = db.get("storage.tokens");
       let usedtoken = false;
       let hd7a = false;
@@ -151,16 +144,15 @@ module.exports = async (client, message, serverData) => {
         message.reply("already used token");
       } else {
         if (hd7a) {
-                
-      let role = message.member.guild.roles.cache.find(
-        role => role.id === "924397231740706877"
-      );
-      if (role) message.guild.members.cache.get(message.author.id).roles.add(role);
+          let role = message.member.guild.roles.cache.find(
+            role => role.id === "924397231740706877"
+          );
+          if (role)
+            message.guild.members.cache.get(message.author.id).roles.add(role);
         } else {
           message.reply("you entered a wrong invite.");
         }
       }
-
 
       break;
     case "geninvite":
