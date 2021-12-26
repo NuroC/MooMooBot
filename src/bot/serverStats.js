@@ -1,21 +1,17 @@
 const fetch = require("node-fetch");
 
 async function getData(serverData) {
-  serverData = await fetch(
-    `http://${
-      serverData === "normal" ? "" : serverData + "."
-    }moomoo.io/serverData.js`
-  )
+  let players = 0;
+  await fetch(`https://${serverData}.moomoo.io/serverData`)
     .then(e => e.text())
     .then(data => {
-      let servers = JSON.parse(data.split("= ")[1].split(";")[0]).servers;
-      let players = 0;
-      for (let i in servers) players += servers[i].games[0].playerCount;
-      return players;
+      let servers = JSON.parse(data);
 
-      return serverData;
+      for (let i = 0; i < servers.servers.length; i++) {
+        players = players + parseInt(servers.servers[i].games[0].playerCount);
+      }
     });
+  return players;
 }
 
 module.exports = getData;
-
